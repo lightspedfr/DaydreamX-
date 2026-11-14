@@ -15,10 +15,23 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies and missing placeholder package
+      - name: Install dependencies and config packages
         run: |
           npm install --include=dev
-          npm install --no-save @mercuryworkshop/epoxy-transport
+          npm install --no-save \
+            vite \
+            @vitejs/plugin-react-swc \
+            vite-plugin-bundle-obfuscator \
+            vite-plugin-static-copy \
+            @mercuryworkshop/wisp-js \
+            @tomphttp/bare-server-node \
+            @mercuryworkshop/bare-as-module3 \
+            @mercuryworkshop/epoxy-transport \
+            @mercuryworkshop/libcurl-transport \
+            @mercuryworkshop/bare-mux \
+            @mercuryworkshop/scramjet \
+            @titaniumnetwork-dev/ultraviolet \
+            dotenv
 
       - name: Build application
         run: npm run build
