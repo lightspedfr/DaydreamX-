@@ -1,0 +1,43 @@
+name: Build and Tunnel
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  build-and-tunnel:
+    runs-on: ubuntu-latest
+    env:
+      PORT: 8080
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies and config packages
+        run: |
+          npm install --include=dev
+          npm install --no-save \
+            vite \
+            @vitejs/plugin-react-swc \
+            vite-plugin-bundle-obfuscator \
+            vite-plugin-static-copy \
+            @mercuryworkshop/wisp-js \
+            @tomphttp/bare-server-node \
+            @mercuryworkshop/bare-as-module3 \
+            @mercuryworkshop/epoxy-transport \
+            @mercuryworkshop/libcurl-transport \
+            @mercuryworkshop/bare-mux \
+            @mercuryworkshop/scramjet \
+            @titaniumnetwork-dev/ultraviolet \
+            dotenv
+
+      - name: Build application
+        run: npm run build
+
+      - name: Start server and Pinggy tunnel
+        run: |
+          node server.js &
+          sleep 3
+          ssh -T -p 443 -o StrictHostKeyChecking=no -o ServerAliveInterval=30 -R0:localhost:8080 a.pinggy.io
