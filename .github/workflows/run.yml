@@ -1,9 +1,10 @@
 name: Build, Run, and Pinggy Tunnel
 
 on:
-  workflow_dispatch: # Allows you to trigger this manually from the Actions tab
+  workflow_dispatch:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   run-and-tunnel:
@@ -30,11 +31,6 @@ jobs:
 
       - name: Start server and open Pinggy SSH tunnel
         run: |
-          # Start the Node.js server in the background using PORT=8080
           node server.js &
-          
-          # Wait briefly to ensure the server is listening on port 8080
           sleep 3
-          
-          # Start the Pinggy SSH tunnel in non-interactive mode (-T)
           ssh -T -p 443 -o StrictHostKeyChecking=no -o ServerAliveInterval=30 -R0:localhost:8080 a.pinggy.io
