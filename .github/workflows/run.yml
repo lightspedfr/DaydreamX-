@@ -1,10 +1,6 @@
 name: Build, Run, and Pinggy Tunnel
 
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
+on: [workflow_dispatch]
 
 jobs:
   run-and-tunnel:
@@ -28,14 +24,8 @@ jobs:
       - name: Build application
         run: npm run build
 
-      - name: Verify dependencies and start server
+      - name: Start server and open Pinggy SSH tunnel
         run: |
-          # Ensure node_modules exists before starting
-          ls -la node_modules
-          
-          # Start the Node.js server in the background
           node server.js &
           sleep 3
-          
-          # Start Pinggy SSH tunnel
           ssh -T -p 443 -o StrictHostKeyChecking=no -o ServerAliveInterval=30 -R0:localhost:8080 a.pinggy.io
