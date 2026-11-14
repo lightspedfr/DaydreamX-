@@ -1,0 +1,40 @@
+name: Build, Run, and Pinggy Tunnel
+
+on:
+  workflow_dispatch: # Allows you to trigger this manually from the Actions tab
+  push:
+    branches: [ main ]
+
+jobs:
+  run-and-tunnel:
+    runs-on: ubuntu-latest
+
+    env:
+      PORT: 8080
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm i
+
+      - name: Build application
+        run: npm run build
+
+      - name: Start server and open Pinggy SSH tunnel
+        run: |
+          # Start the Node.js server in the background using PORT=8080
+          node server.js &
+          
+          # Wait briefly to ensure the server is listening on port 8080
+          sleep 3
+          
+          # Start the Pinggy SSH tunnel in non-interactive mode (-T)
+          ssh -T -p 443 -o StrictHostKeyChecking=no -o ServerAliveInterval=30 -R0:localhost:8080 a.pinggy.io
